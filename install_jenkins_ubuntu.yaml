@@ -1,0 +1,24 @@
+- hosts: all
+  tasks:
+    - name: Ensure Apache is NOT on this server
+      apt: name=apache2 state=absent
+      become: yes
+    
+    - name: Patch up server
+      apt: update_cache=yes
+      become: yes
+
+    - name: Add Jenkins APT key
+      apt_key: 
+      url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+      become: yes
+
+    - name: Add Jenkins to source list
+      apt_repository:
+      repo: deb https://pkg.jenkins.io/debian-stable binary/
+      become: yes
+
+    - name: Install Jenkins
+      apt:
+      name: jenkins 
+      become: yes
