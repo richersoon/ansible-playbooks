@@ -1,0 +1,18 @@
+# Provision an EC2 instance
+
+- hosts: localhost
+
+  tasks:
+    - name: Start up an EC2 Instance
+      ec2:
+	key_name: my-windows-test
+        group: open-all
+        instance_type: t2.micro
+        image: ami-fc5ae39f
+        wait: yes
+        region: ap-southeast-1
+        exact_count: 1
+        instance_tags:
+          Name: Jenkins_Server
+        count_tag:
+          Name: Jenkins_Server
