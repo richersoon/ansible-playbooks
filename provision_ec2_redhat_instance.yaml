@@ -21,10 +21,6 @@
     - name: Gather the new ip addresses
       add_host: groups=new_ec2_instances hostname="{{ item.public_ip }}"
       with_items: "{{ ec2.instances }}"
-    
-    - name: Debugging
-      debug:
-        msg: "groups ramon {{groups}}"
         
     - name: Wait for the SSH port to respond
       wait_for:
@@ -38,4 +34,29 @@
   tasks:
     - name: Apply Patches
       yum: name=* state=latest
+      become: yes
+
+    - name: Add Jenkins Red Hat Repository
+      yum_repository:
+        name: jenkins
+        description: Jenkins Repo
+        baseurl: http://pkg.jenkins.io/redhat-stable
+      become: yes
+
+    - name: Add RPM key
+      rpm_key:
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+      become: yes
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: latest
+      become: yes
+
+    - name: Start up Jenkins
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
       become: yes
