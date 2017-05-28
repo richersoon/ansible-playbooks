@@ -3,10 +3,32 @@
 - hosts: localhost
 
   tasks: 
+    - name: Create a suitable set of firewall rules
+      ec2_group:
+        name: jenkins_server_security_groups
+        description: Specific rules for a Jenkins Instance
+        region: ap-southeast-1
+        rules_egress:
+          - proto: tcp
+            from_port: 0
+            to_port: 65535
+            cidr_ip: 0.0.0.0/0
+        rules:
+          - proto: tcp
+            from_port: 22 
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+
+          - proto: tcp
+            from_port: 8080 
+            to_port: 8080  
+            cidr_ip: 0.0.0.0/0
+    
+        
     - name: Start up an EC2 Instance
       ec2:
         key_name: my-windows-test
-        group: open-all
+        group: jenkins_server_security_groups
         instance_type: t2.micro
         image: ami-fc5ae39f
         wait: yes
