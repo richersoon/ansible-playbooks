@@ -29,9 +29,12 @@
         state: started
       with_items: "{{ ec2.instances }}"
 
-- hosts: new_ec2_instances
+- hosts: new_ec2_instances, tag_Name_Jenkins_Server
 
   tasks:
+    - name: A dummy task to see if dynamic inventory is being found
+      debug: msg="Yes, found the inventory"
+
     - name: Apply Patches
       yum: name=* state=latest
       become: yes
