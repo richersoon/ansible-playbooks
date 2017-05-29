@@ -1,13 +1,17 @@
-# Provision an EC2 instance
-
 - hosts: localhost
+
+  vars:
+    region: ap-southeast-1
+    instance_type: t2.micro
+    base_image_name: ami-fc5ae39f
+    number_of_instances_create: 1
 
   tasks: 
     - name: Create a suitable set of firewall rules
       ec2_group:
         name: jenkins_server_security_groups
         description: Specific rules for a Jenkins Instance
-        region: ap-southeast-1
+        region: "{{ region }}"
         rules_egress:
           - proto: tcp
             from_port: 0
@@ -29,11 +33,11 @@
       ec2:
         key_name: my-windows-test
         group: jenkins_server_security_groups
-        instance_type: t2.micro
-        image: ami-fc5ae39f
+        instance_type: "{{ instance_type }}"
+        image: "{{ base_image_name }}"
         wait: yes
-        region: ap-southeast-1
-        exact_count: 1
+        region: "{{ region }}"
+        exact_count: "{{ number_of_instances_create }}"
         instance_tags:
           Name: Jenkins_Server
         count_tag:
