@@ -1,3 +1,5 @@
+# Provision an EC2 instance
+
 - hosts: localhost
 
   vars:
@@ -7,6 +9,11 @@
     number_of_instances_create: 1
 
   tasks: 
+    - name: Delete existing password file
+      file:
+        path: ./jenkinsPassword.txt
+        state: absent
+
     - name: Create a suitable set of firewall rules
       ec2_group:
         name: jenkins_server_security_groups
@@ -88,4 +95,21 @@
         name: jenkins
         state: started
         enabled: yes
+      become: yes
+
+    - name: Wait for Jenkins Start
+      wait_for:
+        port: 8080
+        state: started
+        delay: 30         
+
+    - name: Get initial password
+      fetch:
+        src: /var/lib/jenkins/secrets/initialAdminPassword
+        dest: ./jenkinsPassword.txt
+        flat: yes
+      become: yes
+
+    - name: Install Git
+      yum: name=git state=latest
       become: yes
